@@ -6,6 +6,11 @@ handlers:
 - url: /assets
   static_dir: assets
 
+- url: /static
+  static_dir: static
+- url: /ammap3
+  static_dir: ammap3
+
 - url: /favicon\.ico
   static_files: assets/favicon.ico
   upload: assets/favicon\.ico

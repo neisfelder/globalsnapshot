@@ -196,7 +196,7 @@ class MainHandler(webapp2.RequestHandler):
         
         template_values["storyList"] = [[story["title"], story["url"], float(story["coordinates"]["lat"]), float(story["coordinates"]["lng"])] for story in storyList]
 
-        template = JINJA_ENVIRONMENT.get_template('map_page.html')
+        template = JINJA_ENVIRONMENT.get_template('ammap_page.html')
         self.response.write(template.render(template_values))
         
 
@@ -259,10 +259,19 @@ class aboutHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('aboutpage.html')
         self.response.write(template.render(vals))
 
+class landingHandler(webapp2.RequestHandler):
+    def get(self):
+        vals = {}
+        vals["page_title"] = "Global Snapshot"
+
+        template = JINJA_ENVIRONMENT.get_template('landing.html')
+        self.response.write(template.render(vals))
+
 # for all URLs except alt.html, use MainHandler
 application = webapp2.WSGIApplication([ \
                                       ('/results.json', myJSONHandler),
-                                      ('/', MainHandler),
+                                      ('/map', MainHandler),
                                       ('/about', aboutHandler),
+                                      ('/', landingHandler),
                                       ],
                                       debug=True)
