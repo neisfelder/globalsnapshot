@@ -92,7 +92,9 @@ def getStories():
     for worldStory in dataWorld:
         dataResults.append(worldStory)
     for homeStory in dataHome:
-        dataResults.append(homeStory) 
+        dataResults.append(homeStory)
+
+                                                                # TAG THESE IN SOME WAY SO THEY CAN BE FILTERED
 
     #for poliStory in dataPolitics:
     #    dataResults.append(poliStory) 
@@ -203,8 +205,8 @@ class MainHandler(webapp2.RequestHandler):
 class myJSONHandler(webapp2.RequestHandler):
     def get(self):
         vals = {}
-        vals["page_title"] = "newsIndex"
-        vals["description"] = "hey"
+        vals["page_title"] = "News Index"
+        vals["description"] = "Top stories today: ..."
 
         storiesWithCoords = overallInfo()
 
@@ -218,11 +220,11 @@ class myJSONHandler(webapp2.RequestHandler):
             storyDict = {}
             storyDict["story"] = storyWithCoords["title"]
             storyDict["coordinates"] = [lng,lat]
-            storyDict["color"] = "#f44242"
+            #storyDict["color"] = "#f44242"
             storyDict["url"] = storyWithCoords["url"]
             storyDict["abstract"] = "%s.."%(storyWithCoords["abstract"])
 
-            logging.info("getting comments")
+            #logging.info("getting comments")
             #storyComments = getComments(storyWithCoords["url"])
             #storyComments = getComments("https:%s"%(storyWithCoords["url"][5:]))
             
@@ -246,7 +248,116 @@ class myJSONHandler(webapp2.RequestHandler):
             vals_list.append(storyDict)
 
         vals["articles"] = vals_list
-        
+        #vals['articles'] = [ {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Brussels",
+                            #   "latitude": 50.8371,
+                            #   "longitude": 4.3676
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Copenhagen",
+                            #   "latitude": 55.6763,
+                            #   "longitude": 12.5681
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Paris",
+                            #   "latitude": 48.8567,
+                            #   "longitude": 2.3510
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Reykjavik",
+                            #   "latitude": 64.1353,
+                            #   "longitude": -21.8952
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Moscow",
+                            #   "latitude": 55.7558,
+                            #   "longitude": 37.6176
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Madrid",
+                            #   "latitude": 40.4167,
+                            #   "longitude": -3.7033
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "London",
+                            #   "latitude": 51.5002,
+                            #   "longitude": -0.1262,
+                            #   "url": "http://www.google.co.uk"
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Peking",
+                            #   "latitude": 39.9056,
+                            #   "longitude": 116.3958
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "New Delhi",
+                            #   "latitude": 28.6353,
+                            #   "longitude": 77.2250
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Tokyo",
+                            #   "latitude": 35.6785,
+                            #   "longitude": 139.6823,
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Ankara",
+                            #   "latitude": 39.9439,
+                            #   "longitude": 32.8560
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Buenos Aires",
+                            #   "latitude": -34.6118,
+                            #   "longitude": -58.4173
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Brasilia",
+                            #   "latitude": -15.7801,
+                            #   "longitude": -47.9292
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Ottawa",
+                            #   "latitude": 45.4235,
+                            #   "longitude": -75.6979
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Washington",
+                            #   "latitude": 38.8921,
+                            #   "longitude": -77.0241
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 0.5,
+                            #   "title": "Kinshasa",
+                            #   "latitude": -4.3369,
+                            #   "longitude": 15.3271
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 10.0,
+                            #   "title": "Cairo Dude",
+                            #   "latitude": 30.0571,
+                            #   "longitude": 31.2272
+                            # }, {
+                            #   "zoomLevel": 5,
+                            #   "scale": 10.0,
+                            #   "title": "Pretoria",
+                            #   "latitude": -25.7463,
+                            #   "longitude": 28.1876
+                            # } ]
 
         template = JINJA_ENVIRONMENT.get_template('results.json')
         self.response.write(template.render(vals))
@@ -269,7 +380,7 @@ class landingHandler(webapp2.RequestHandler):
 
 # for all URLs except alt.html, use MainHandler
 application = webapp2.WSGIApplication([ \
-                                      ('/results.json', myJSONHandler),
+                                      ('/results1.json', myJSONHandler),
                                       ('/map', MainHandler),
                                       ('/about', aboutHandler),
                                       ('/', landingHandler),

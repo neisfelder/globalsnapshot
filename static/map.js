@@ -2,6 +2,22 @@
 //NEED TO ADD storyTitle.onclick="goToCoords({{title[3]}},{{title[2]}},{{title[1]}});"
 
 
+// Get the news stories from our JSON File
+var storyList = [];
+
+$.getJSON( "https://newsapptesting.appspot.com/results1.json", function( data ) {
+    console.log('data:');
+    console.log(data);
+    $.each(data, function (index, value) {
+        //console.log('jsonValue:');
+        //var jsonValue = $.parseJSON(value);
+        storyList.push(value);
+    });
+
+    //console.log( data );
+    //$dict = $.parseJSON( data );
+});
+console.log(storyList);
 
 
 //  -------------------------------------     AmMap   ---------------------------------------------------------
@@ -11,6 +27,8 @@
  * This example uses pulsating circles CSS by Kevin Urrutia
  * http://kevinurrutia.tumblr.com/post/16411271583/creating-a-css3-pulsating-circle
  */
+
+// Get list of stories with associated data
 
 var map = AmCharts.makeChart( "mapdiv", {
   "type": "map",
@@ -31,117 +49,11 @@ var map = AmCharts.makeChart( "mapdiv", {
 
   "dataProvider": {
     "map": "worldLow",
-    "images": [ {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Brussels",
-      "latitude": 50.8371,
-      "longitude": 4.3676
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Copenhagen",
-      "latitude": 55.6763,
-      "longitude": 12.5681
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Paris",
-      "latitude": 48.8567,
-      "longitude": 2.3510
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Reykjavik",
-      "latitude": 64.1353,
-      "longitude": -21.8952
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Moscow",
-      "latitude": 55.7558,
-      "longitude": 37.6176
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Madrid",
-      "latitude": 40.4167,
-      "longitude": -3.7033
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "London",
-      "latitude": 51.5002,
-      "longitude": -0.1262,
-      "url": "http://www.google.co.uk"
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Peking",
-      "latitude": 39.9056,
-      "longitude": 116.3958
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "New Delhi",
-      "latitude": 28.6353,
-      "longitude": 77.2250
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Tokyo",
-      "latitude": 35.6785,
-      "longitude": 139.6823,
-      "url": "http://www.google.co.jp"
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Ankara",
-      "latitude": 39.9439,
-      "longitude": 32.8560
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Buenos Aires",
-      "latitude": -34.6118,
-      "longitude": -58.4173
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Brasilia",
-      "latitude": -15.7801,
-      "longitude": -47.9292
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Ottawa",
-      "latitude": 45.4235,
-      "longitude": -75.6979
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Washington",
-      "latitude": 38.8921,
-      "longitude": -77.0241
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Kinshasa",
-      "latitude": -4.3369,
-      "longitude": 15.3271
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Cairo",
-      "latitude": 30.0571,
-      "longitude": 31.2272
-    }, {
-      "zoomLevel": 5,
-      "scale": 0.5,
-      "title": "Pretoria",
-      "latitude": -25.7463,
-      "longitude": 28.1876
-    } ]
+    "images": storyList
+  },
+
+  "zoomControl": {
+		"zoomControlEnabled": true
   }
 } );
 
@@ -167,14 +79,22 @@ function updateCustomMarkers( event ) {
     image.externalElement.style.top = xy.y + 'px';
     image.externalElement.style.left = xy.x + 'px';
   }
+
+    // when story marker is clicked, zoom and show full preview
+    applyMarkerBehavior();
+    addPopupModal( image );
+
 }
 
 // this function creates and returns a new marker element
 function createCustomMarker( image ) {
+  markerID = seoURL(image.title);
+
   // create holder
   var holder = document.createElement( 'div' );
-  holder.className = 'map-marker';
+  holder.className = 'map-marker ' + parseInt(image.latitude) + ' ' + parseInt(image.longitude);
   holder.title = image.title;
+  holder.id = markerID;
   holder.style.position = 'absolute';
 
   // maybe add a link to it?
@@ -190,10 +110,28 @@ function createCustomMarker( image ) {
   dot.className = 'dot';
   holder.appendChild( dot );
 
+
   // create pulse
   var pulse = document.createElement( 'div' );
   pulse.className = 'pulse';
   holder.appendChild( pulse );
+
+  //Create hover preview element
+  var preview = document.createElement('div');
+  preview.className = 'story-preview'
+  dummyTitle = image.title;
+  dummyLocation = "Location";
+  dummyPreview = "preview text";
+  dummyID = "unique-dummy-id" + image.title;
+  contents = createHoverContents(dummyTitle,dummyLocation,dummyPreview,dummyID);
+  preview.appendChild( contents );
+  holder.appendChild( preview );
+
+  // show corresponding popup div
+  holder.onclick = function() {
+    holder.className += ' story-active';            // SHOULD TOGGLE!!!!
+    showPreview( image );
+  }
 
   // append the marker to the map container
   image.chart.chartDiv.appendChild( holder );
@@ -204,7 +142,90 @@ function createCustomMarker( image ) {
 
 
 
+// when story marker is clicked, zoom and show full preview
+    // Save $(this) as something so I can hide an show
+function applyMarkerBehavior() {
+    //$('div.map-marker').click(function() {
+    //    console.log('latitude: ' + lat + ', longitude: ' + lng);
+    //});
 
+    $('div.map-marker').hover(function() {
+        console.log($(this));
+        //$(this).css("display", "block");
+        //var preview = document.getElementById(this.id);
+        $preview = $(this).find('div.story-preview');
+        $preview.css('display', 'block');
+    }, function(){
+        //$(this).css("display", "hidden");
+        $preview = $(this).find('div.story-preview');
+        $preview.css('display', 'none');
+    });
+}
+
+
+    function addPopupModal( image ) {
+        console.log('adding popup modal');
+
+        var storyID = image.id;
+        var title = "Title";
+        var authorTime = "Author and time";
+        var bigImg = "Image here.";
+        var abstract = "Abstract...";
+        var articleLink = "url here";
+
+        document.getElementById('complete_summaries').appendChild(document.createTextNode(
+            "<div class='modal right fade' id='" + storyID + "' tabindex='-1' role='dialog' aria-labelledby='myModalLabel2'>" +
+                "<div class='modal-dialog' role='document'>" +
+                   "<div class='modal-content'>" +
+
+                "<div class='modal-header'>" +
+                "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                "<h4 class='modal-title' id='myModalLabel2'>Right Sidebar</h4>" +
+                "</div>" +
+
+                "<div class='modal-body'>" +
+                 "<p>" + abstract + "</p>" +
+                "</div>" +
+
+               "</div>" +
+               "<!-- modal-content -->" +
+              "</div>" +
+              "<!-- modal-dialog -->" +
+             "</div>" +
+             "<!-- modal -->"
+        ));
+
+
+    }
+
+    function showPreview( marker ) {
+        alert('showing story preview');
+        $(marker).modal('toggle');
+    }
+
+
+
+
+
+
+    function createHoverContents(title,location,preview,id) {
+        p = document.createElement('p');
+        p.innerHTML = title;
+        return p;
+        //highlight story in top stories sidebar
+    }
+
+    function seoUrl($string) {
+        //Lower case everything
+        $string = strtolower($string);
+        //Make alphanumeric (removes all other characters)
+        $string = preg_replace("/[^a-z0-9_\s-]/", "", $string);
+        //Clean up multiple dashes or whitespaces
+        $string = preg_replace("/[\s-]+/", " ", $string);
+        //Convert whitespaces and underscore to dash
+        $string = preg_replace("/[\s_]/", "-", $string);
+        return $string;
+    }
 
 
 
