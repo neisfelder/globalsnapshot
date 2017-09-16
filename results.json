@@ -2,18 +2,18 @@
 
     {% for article in articles %}
     {
-      "zoomLevel": 5,
+      "zoomLevel": 10,
       "scale": 10.0,
       "title": "{{ article['story'] }}",
       "latitude": "{{ article['coordinates'][1]}}",
       "longitude": "{{ article['coordinates'][0]}}",
-      "image": "{{ article['image'] }}",
+      "bigImage": "{{ article['image'] }}",
       "thumbImage": "{{ article['thumbImage'] }}",
       "location": "{{ article['location'] }}",
       "abstract": "{{ article['abstract'] }}",
-      "fullArticle": "{{  }}"
       "authorTime": "{{ article['authorTime'] }}",
-      "urlAddress": "{{ article['url'] }}"
+      "urlAddress": "{{ article['url'] }}",
+      "section": "{{ article['section'] }}"
     }
     {% if not loop.last %},{% endif %}
     {% endfor %}

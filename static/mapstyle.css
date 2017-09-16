@@ -9,16 +9,34 @@
     cursor: pointer;
 }
 .pulse {
-    width: 10px;
-    height: 10px;
-    border: 5px solid #f7f14c;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;
-    background-color: #716f42;
+    width: 30px;
+    height: 30px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 6px solid #87d2ff;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    background-color: #49bcff;
     z-index: 10;
     position: absolute;
+    transition: all .2s ease;
   }
+
+.pulse:hover {
+    -webkit-transform: scale(1.3);
+    -moz-transform: scale(1.3);
+    -o-transform: scale(1.3);
+    transform: scale(1.3);
+    border: 3px solid;
+}
+
+.story-active {
+    background-color: #878787;
+    border-color: #fff;
+}
+
+
 .map-marker .dot {
     border: 10px solid #fff601;
     background: transparent;
@@ -40,147 +58,8 @@
     opacity: 0;
   }
 
-  .story-preview {
+  /*.story-preview {
     display: none;
-  }
-
-  /* ------------------------ Styling of Pop-up Modal with story preview ------------------------ */
-
-    /*******************************
-    * MODAL AS LEFT/RIGHT SIDEBAR
-    * Add "left" or "right" in modal parent div, after class="modal".
-    * Get free snippets on bootpen.com
-    *******************************/
-        .modal.left .modal-dialog,
-        .modal.right .modal-dialog {
-            position: fixed;
-            margin: auto;
-            width: 320px;
-            height: 100%;
-            -webkit-transform: translate3d(0%, 0, 0);
-                -ms-transform: translate3d(0%, 0, 0);
-                 -o-transform: translate3d(0%, 0, 0);
-                    transform: translate3d(0%, 0, 0);
-        }
-
-        .modal.left .modal-content,
-        .modal.right .modal-content {
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .modal.left .modal-body,
-        .modal.right .modal-body {
-            padding: 15px 15px 80px;
-        }
-
-
-    /*Right*/
-        .modal.right.fade .modal-dialog {
-            right: -320px;
-            -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
-               -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
-                 -o-transition: opacity 0.3s linear, right 0.3s ease-out;
-                    transition: opacity 0.3s linear, right 0.3s ease-out;
-        }
-
-        .modal.right.fade.in .modal-dialog {
-            right: 0;
-        }
-
-    /* ----- MODAL STYLE ----- */
-        .modal-content {
-            border-radius: 0;
-            border: none;
-        }
-
-        .modal-header {
-            border-bottom-color: #EEEEEE;
-            background-color: #FAFAFA;
-        }
-
-    /* ----- v CAN BE DELETED v ----- */
-    body {
-        background-color: #78909C;
-    }
-
-    .demo {
-        padding-top: 60px;
-        padding-bottom: 110px;
-    }
-
-    .btn-demo {
-        margin: 15px;
-        padding: 10px 15px;
-        border-radius: 0;
-        font-size: 16px;
-        background-color: #FFFFFF;
-    }
-
-    .btn-demo:focus {
-        outline: 0;
-    }
-
-    .demo-footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        padding: 15px;
-        background-color: #212121;
-        text-align: center;
-    }
-
-    .demo-footer > a {
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 16px;
-        color: #fff;
-    }
-
-
-
-  /*
-  @-moz-keyframes pulse {
-   0% {
-      -moz-transform: scale(0);
-      opacity: 0.0;
-   }
-   25% {
-      -moz-transform: scale(0);
-      opacity: 0.1;
-   }
-   50% {
-      -moz-transform: scale(0.1);
-      opacity: 0.3;
-   }
-   75% {
-      -moz-transform: scale(0.5);
-      opacity: 0.5;
-   }
-   100% {
-      -moz-transform: scale(1);
-      opacity: 0.0;
-   }
-  }
-  @-webkit-keyframes "pulse" {
-   0% {
-      -webkit-transform: scale(0);
-      opacity: 0.0;
-   }
-   25% {
-      -webkit-transform: scale(0);
-      opacity: 0.1;
-   }
-   50% {
-      -webkit-transform: scale(0.1);
-      opacity: 0.3;
-   }
-   75% {
-      -webkit-transform: scale(0.5);
-      opacity: 0.5;
-   }
-   100% {
-      -webkit-transform: scale(1);
-      opacity: 0.0;
-   }
   }*/
+
+

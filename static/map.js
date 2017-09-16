@@ -6,8 +6,8 @@
 var storyList = [];
 
 $.getJSON( "https://newsapptesting.appspot.com/results1.json", function( data ) {
-    console.log('data:');
-    console.log(data);
+    //console.log('data:');
+    //console.log(data);
     $.each(data, function (index, value) {
         //console.log('jsonValue:');
         //var jsonValue = $.parseJSON(value);
@@ -17,7 +17,6 @@ $.getJSON( "https://newsapptesting.appspot.com/results1.json", function( data ) 
     //console.log( data );
     //$dict = $.parseJSON( data );
 });
-console.log(storyList);
 
 
 //  -------------------------------------     AmMap   ---------------------------------------------------------
@@ -30,7 +29,7 @@ console.log(storyList);
 
 // Get list of stories with associated data
 
-var map = AmCharts.makeChart( "mapdiv", {
+var map = AmCharts.makeChart( "chartdiv", {
   "type": "map",
   "theme": "light",
   "projection": "miller",
@@ -44,21 +43,50 @@ var map = AmCharts.makeChart( "mapdiv", {
   },
 
   "areasSettings": {
-    "unlistedAreasColor": "#15A892"
+    "unlistedAreasColor": "#f7d1a0"
   },
 
   "dataProvider": {
-    "map": "worldLow",
+    "map": "worldHigh",
     "images": storyList
   },
 
   "zoomControl": {
-		"zoomControlEnabled": true
-  }
-} );
+		"zoomControlEnabled": false
+  },
+
+  "listeners": [{
+    "event": "rendered",
+    "method": function(e) {
+      // Let's log initial zoom settings (for home button)
+      var map = e.chart;
+      map.initialZoomLevel = map.zoomLevel();
+      map.initialZoomLatitude = map.zoomLatitude();
+      map.initialZoomLongitude = map.zoomLongitude();
+    }
+  }]
+
+});
+
+
+function zoomIn() {
+  map.zoomIn();
+}
+
+function zoomOut() {
+  map.zoomOut();
+}
+
+function centerMap() {
+  map.zoomToLongLat(map.initialZoomLevel, map.initialZoomLongitude, map.initialZoomLatitude);
+}
+
 
 // add events to recalculate map position when the map is moved or zoomed
 map.addListener( "positionChanged", updateCustomMarkers );
+//map.addListener( "clickMapObject", zoomToStory);
+// clickMapObject
+
 
 // this function will take current images on the map and create HTML elements for them
 function updateCustomMarkers( event ) {
@@ -80,30 +108,27 @@ function updateCustomMarkers( event ) {
     image.externalElement.style.left = xy.x + 'px';
   }
 
-    // when story marker is clicked, zoom and show full preview
-    applyMarkerBehavior();
-    addPopupModal( image );
 
 }
 
 // this function creates and returns a new marker element
 function createCustomMarker( image ) {
-  markerID = seoURL(image.title);
+  //markerID = seoURL(image.title);
 
   // create holder
   var holder = document.createElement( 'div' );
   holder.className = 'map-marker ' + parseInt(image.latitude) + ' ' + parseInt(image.longitude);
   holder.title = image.title;
-  holder.id = markerID;
+  holder.id = makeSafeForCSS(image.title);
   holder.style.position = 'absolute';
 
   // maybe add a link to it?
-  if ( undefined != image.url ) {
-    holder.onclick = function() {
-      window.location.href = image.url;
-    };
-    holder.className += ' map-clickable';
-  }
+//  if ( undefined != image.url ) {
+//    holder.onclick = function() {
+//      window.location.href = image.url;
+//    };
+//    holder.className += ' map-clickable';
+//  }
 
   // create dot
   var dot = document.createElement( 'div' );
@@ -116,29 +141,49 @@ function createCustomMarker( image ) {
   pulse.className = 'pulse';
   holder.appendChild( pulse );
 
-  //Create hover preview element
-  var preview = document.createElement('div');
-  preview.className = 'story-preview'
-  dummyTitle = image.title;
-  dummyLocation = "Location";
-  dummyPreview = "preview text";
-  dummyID = "unique-dummy-id" + image.title;
-  contents = createHoverContents(dummyTitle,dummyLocation,dummyPreview,dummyID);
-  preview.appendChild( contents );
-  holder.appendChild( preview );
-
-  // show corresponding popup div
-  holder.onclick = function() {
-    holder.className += ' story-active';            // SHOULD TOGGLE!!!!
-    showPreview( image );
+  var story = {}
+  var keyToFind = holder.title;
+  for(var i in storyList){
+      if(storyList[i].title == keyToFind){
+          story = storyList[i];
+          break; // break out of the loop once you've found a match
+      }
   }
+
+  //Use Bootstrap to create popover with story preview on hover
+  $(pulse).popover({
+      trigger: 'hover',
+      html: true,
+      content: '<img class="story-thumb" src="' + story.thumbImage + '"/><span class="storyTitle">' + story.title + '</span><span class="location-tag">' + story.location + '</span>',
+      animation: false,
+      placement: 'top'
+  })
 
   // append the marker to the map container
   image.chart.chartDiv.appendChild( holder );
 
+  // apply hover behavior: popup with article title and thumbnail
+  applyMarkerBehavior();
+
+
+  // attach modal with complete preview
+  addPopupModal( story, holder );
+
+  // show corresponding popup div
+  holder.onclick = function() {
+    pulse.className += ' story-active';            // SHOULD TOGGLE!!!!
+    showPreview( holder.id );
+    zoomToStory(image.latitude, image.longitude);
+  }
+
+
   return holder;
 }
 
+
+function zoomToStory( latitude, longitude ) {
+    map.zoomToLongLat(5, longitude, latitude);
+}
 
 
 
@@ -149,8 +194,7 @@ function applyMarkerBehavior() {
     //    console.log('latitude: ' + lat + ', longitude: ' + lng);
     //});
 
-    $('div.map-marker').hover(function() {
-        console.log($(this));
+    $('.map-marker').hover(function() {
         //$(this).css("display", "block");
         //var preview = document.getElementById(this.id);
         $preview = $(this).find('div.story-preview');
@@ -163,69 +207,99 @@ function applyMarkerBehavior() {
 }
 
 
-    function addPopupModal( image ) {
-        console.log('adding popup modal');
+    function addPopupModal( story, marker ) {
 
-        var storyID = image.id;
-        var title = "Title";
-        var authorTime = "Author and time";
-        var bigImg = "Image here.";
-        var abstract = "Abstract...";
-        var articleLink = "url here";
+        //var story = {};
+//        var keyToFind = marker.title;
+//        for(var i in storyList){
+//            if(storyList[i].title == keyToFind){
+//                story = storyList[i];
+//                break; // break out of the loop once you've found a match
+//            }
+//        }
 
-        document.getElementById('complete_summaries').appendChild(document.createTextNode(
-            "<div class='modal right fade' id='" + storyID + "' tabindex='-1' role='dialog' aria-labelledby='myModalLabel2'>" +
+        var storyID = marker.id;
+        var title = story.title;
+        var authorTime = story.authorTime;
+        var bigImg = story.bigImage;
+        var abstract = story.abstract;
+        var articleLink = story.urlAddress;
+        var section = story.section
+
+
+        var previewContainer = document.createElement('div');
+        previewContainer.setAttribute("class", "modal right fade");
+        previewContainer.setAttribute("tabindex", "-1");
+        previewContainer.setAttribute("role", "dialog");
+        previewContainer.setAttribute("aria-labelledby", "storyModal");
+        previewContainer.setAttribute("id", storyID + "_modal");
+        previewContainer.innerHTML =
                 "<div class='modal-dialog' role='document'>" +
                    "<div class='modal-content'>" +
 
-                "<div class='modal-header'>" +
-                "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
-                "<h4 class='modal-title' id='myModalLabel2'>Right Sidebar</h4>" +
-                "</div>" +
+                        "<div class='modal-header'>" +
+                            "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                            "<img class='preview-photo' src='" + bigImg + "' alt='Story Photo' />" +
+                            "<h4 class='modal-title'>" + title + "</h4>" +
+                        "</div>" +
 
-                "<div class='modal-body'>" +
-                 "<p>" + abstract + "</p>" +
-                "</div>" +
+                        "<div class='modal-body'>" +
+                            "<span class='authorTime'>" + authorTime + "</span>" +
+                            "<p>" + abstract + "</p>" +
+                            "<p>Article link: " + articleLink + "</p>" +
+                            "<p>Image link: " + bigImg + "</p>" +
+                            "<p>Section: " + section + "</p>"
+                        "</div>" +
 
-               "</div>" +
-               "<!-- modal-content -->" +
-              "</div>" +
-              "<!-- modal-dialog -->" +
-             "</div>" +
-             "<!-- modal -->"
-        ));
+                    "</div> <!-- modal-content -->" +
+                "</div> <!-- modal-dialog -->";
 
+        document.getElementById('complete_summaries').appendChild(previewContainer);
 
     }
 
-    function showPreview( marker ) {
-        alert('showing story preview');
-        $(marker).modal('toggle');
+    function showPreview( markerID ) {
+        //alert('showing story preview');
+        //alert('opening ' + markerID);
+        $modal = $('#' + markerID + "_modal");
+        $modal.modal('toggle');
     }
 
 
 
 
+//    function createHoverContents(title,location,preview,id) {
+//        popover =
+//        $('.popover-dismiss').popover({
+//          trigger: 'hover'
+//        })
+//        p = document.createElement('p');
+//        p.innerHTML = title;
+//        return popover;
+//        //highlight story in top stories sidebar
+//    }
 
 
-    function createHoverContents(title,location,preview,id) {
-        p = document.createElement('p');
-        p.innerHTML = title;
-        return p;
-        //highlight story in top stories sidebar
+    function makeSafeForCSS(name) {
+        return name.replace(/[^a-z0-9]/g, function(s) {
+            var c = s.charCodeAt(0);
+            if (c == 32) return '-';
+            if (c >= 65 && c <= 90) return '_' + s.toLowerCase();
+            return '__' + ('000' + c.toString(16)).slice(-4);
+        });
     }
 
-    function seoUrl($string) {
-        //Lower case everything
-        $string = strtolower($string);
-        //Make alphanumeric (removes all other characters)
-        $string = preg_replace("/[^a-z0-9_\s-]/", "", $string);
-        //Clean up multiple dashes or whitespaces
-        $string = preg_replace("/[\s-]+/", " ", $string);
-        //Convert whitespaces and underscore to dash
-        $string = preg_replace("/[\s_]/", "-", $string);
-        return $string;
-    }
+//    function seoURL($string) {
+//        //Lower case everything
+//        $string = strtolower($string);
+//        //Make alphanumeric (removes all other characters)
+//        $string = preg_replace("/[^a-z0-9_\s-]/", "", $string);
+//        //Clean up multiple dashes or whitespaces
+//        $string = preg_replace("/[\s-]+/", " ", $string);
+//        //Convert whitespaces and underscore to dash
+//        $string = preg_replace("/[\s_]/", "-", $string);
+//        return $string;
+//    }
 
 
 

@@ -224,6 +224,10 @@ class myJSONHandler(webapp2.RequestHandler):
             storyDict["url"] = storyWithCoords["url"]
             storyDict["abstract"] = "%s.."%(storyWithCoords["abstract"])
 
+            # Get section of story
+            storyDict["section"] = storyWithCoords["section"]
+            logging.info(storyDict["section"])
+
             #logging.info("getting comments")
             #storyComments = getComments(storyWithCoords["url"])
             #storyComments = getComments("https:%s"%(storyWithCoords["url"][5:]))
