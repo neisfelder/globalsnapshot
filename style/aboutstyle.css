@@ -1,0 +1,137 @@
+body {
+
+}
+
+.contentSection {
+    background-color: #f9f9f9;
+    height: 100%;
+    color: #383838;
+    padding: 50px;
+    z-index: 2;
+}
+
+.contentSection p {
+    font-size: 20px;
+}
+
+#backgroundImgBox {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-image: url("https://images.unsplash.com/photo-1477028508065-b234eb901082?dpr=2&auto=format&fit=crop&w=1500&h=1000&q=80&cs=tinysrgb&crop=");
+}
+
+
+
+
+/*body {
+    margin: 0px;
+    font-family: Georgia, Serif;
+    background-color: #48a7c4;
+}
+
+#main {
+    border: 3px solid white;
+    padding: 50px;
+    background-color: #48a7c4;
+    color: white;
+    width: 50%;
+    margin-top: 25%;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-bottom: 6%;
+}
+
+#main h1 {
+    font-size: 80px;
+    text-decoration: bold;
+    font-family: ‘Arial’, Gadget, sans-serif;
+}
+
+#mainP {
+    font-size: 18px;
+    line-height: 130%;
+    padding-top: 40px;
+    padding-bottom: 30px;
+    color: white;
+}
+
+#mainP a {
+    color: white;
+}
+
+#imgBox {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    z-index: -1;
+}
+
+img {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#back {
+    color: black;
+    font-size: 15px;
+    text-decoration: none;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+#contact {
+    color: black;
+    font-size: 15px;
+    text-decoration: none;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+#contact:hover, #back:hover {
+    background-color: #48a7c4;
+    color: white;
+    border: 3px solid white;
+}
+
+#cr {
+    position: fixed;
+    right: 8px;
+    bottom: 2px;
+    font-size: 11px;
+    text-align: right;
+    padding: 0px;
+    height: 10px;
+    color: white;
+    background-color: black;
+    z-index: 2;
+}
+
+#cr a {
+    color: white;
+    text-decoration: none;
+    text-decoration: bold;
+}
+
+#cr a:hover {
+    text-decoration: underline;
+}*/

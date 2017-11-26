@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <meta property="og:url"           content="http://nytglobalsnapshot.com/" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="New York Times Global Snapshot" />
+    <meta property="og:description"   content="Interactive news map of most popular stories from the New York Times" />
+    <meta property="og:image"         content="http://static1.squarespace.com/static/5717e7c922482e47d3e1dc52/t/58598836e4fcb58d0e348e0f/1482262582989/mapapp3.jpg" />
+    <link rel="shortcut icon" type="image/x-icon" href="http://nytglobalsnapshot.com/assets/favicon.ico" />
+    <title>{{page_title}}</title>
+    <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/style/mapstyle.css" />
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+  </head>
+
+  <body>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+            integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+            integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+
+
+    <img id="forFb" src="https://static1.squarespace.com/static/5717e7c922482e47d3e1dc52/t/58598836e4fcb58d0e348e0f/1482262582989/mapapp3.jpg" />
+    <div id="map" onmousemove="showCoords(event)"></div>
+    <!--<btn type="button" class="btn btn-info linkBtn fixedTopLeft">About</btn>-->
+    <a class="btn btn-primary fixed fixedTopRight" id="about" href="/about" role="button">About</a>
+    <div id="content_container">
+      <img id="articleThumbnail" src="" alt="">
+      <div id="info-box"><p id="hoverExp">hover over a point</p></div>
+      <div id="loc"><p id="locP"></p></div>
+    </div>
+    <div id="sidebar" class="box_shadow">
+      <div id="logo"><img src="assets/newLogo.png" alt="new York Times Global Snapshot" /></div>
+      <h1>Top Stories</h1>
+      <div id="storyFeed">
+        {% for title in storyList %}
+          <div class="sidebarLinks">
+            <div class="storyTitle" id="{{title[1]}}" onclick="goToCoords({{title[3]}},{{title[2]}},{{title[1]}});">
+              <p>{{title[0]}}</p>
+            </div>
+          </div>
+        {% endfor %}
+        <!--<p><a>more stories</a></p>-->
+      </div>
+      <!--<p id="cr">&copy; Hvckerboyz 2016</p>-->
+    </div>
+    <div id="focus"></div>
+    <div id="full_summary" class="box_shadow">
+      <h1 id="moreTitle"></h1>
+      <p id="author"></p>
+      <div id="bigPicture"><img id="picture"/></div>
+      <h2 id="abstract"></h2>
+      <a id="link"></a>
+    </div>
+    <div id="exit"><img src="assets/arrowright.svg" alt=">"></div>
+    <!--<div id="worldViewButton"><p>World View</p></div>-->
+    <button type="button" class="btn btn-primary btn-lg fixed fixedTopLeft" id="worldViewButton">World View</button>
+
+    <div class="fixed fixedBottomRight box_shadow" id="zoomUIBox">
+      <img id="zoomInBtn" src="assets/zoomIn.png" alt="Zoom In" />
+      <img id="zoomOutBtn" src="assets/zoomOut.png" alt="Zoom Out" />
+    </div>
+
+
+    <!--<div id="loading"></div>
+    /<div id="content">loading map......</div>-->
+
+
+    <script src="script/mapscript.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABp_zac_pNDbqx23TBFlDu3I54IRdBqaA&callback=initMap">
+    </script>
+  </body>
+</html>

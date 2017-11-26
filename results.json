@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [    
+    
+    {% for article in articles %}
+    {
+      "type": "Feature",
+      "properties": {
+        "letter": "{{article['story']}}",
+        "location": "{{article['location']}}",
+        "color": "{{article['color']}}",
+        "url": "{{article['url']}}",
+        "image": "{{article['image']}}",
+        "thumbImage": "{{article['thumbImage']}}",
+        "abstract": "{{article['abstract']}}",
+        "authorTime": "{{article['authorTime']}}",
+        "comments": "comments will be displayed here"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": {{article['coordinates']}}
+      }
+    }
+    {% if not loop.last %},{% endif %}
+    {% endfor %}
+    {{alertifyMe}}
+
+  ]
+}
