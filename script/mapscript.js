@@ -6,16 +6,43 @@
       y = event.clientY;
   }
 
-  function goToCoords(lat,lng,url) {
-      console.log("story clicked");
-      console.log(lat);
-      console.log(lng);
+  // NEED TO PASS IN ID IN HTML
 
-      var latLng = new google.maps.LatLng(lng,lat - 6);
-      map.panTo(latLng);
-      map.setZoom(5);
-      //need to get the data point based on the url
-      //showTheStory();
+  function goToCoords(storyString,lat,lng,url) {
+
+      var cleanedId = id.replace(/\W/g,'_');
+      selectedFeature = getFeatureById(cleanedId);
+
+      // Get necessary info about story from event click
+      var title = selectedFeature.getProperty('letter');
+      var url = selectedFeature.getProperty('url');
+      var image = selectedFeature.getProperty('image');
+      var authorTime = selectedFeature.getProperty('authorTime');
+
+      var abstract = selectedFeature.getProperty('abstract');
+      console.log("abstract: " + abstract);
+
+      var latitude = lat
+
+      var longitude = lng
+
+      selectedNow = url
+      event.feature.setProperty('isSelected', true);
+
+      // SHOW CORRESPONDING MODAL
+      //showTheStory(title, url, image, authorTime, abstract, latitude, longitude);
+
+
+      //console.log("story clicked");
+      //console.log(lat);
+      //console.log(lng);
+
+      //var latLng = new google.maps.LatLng(lng,lat - 6);
+      //map.panTo(latLng);
+      //map.setZoom(5);
+
+      // Pass the feature associated with the story title as a parameter (so it can be opened immediately)
+      //showTheStory(feature);
 
     }
 
@@ -25,28 +52,28 @@
     //alert("zooming out!");
   }
 
-  function exitPreviewPanel() {
-      previewHoverable = 0;
-      document.getElementById("full_summary").style.right = "0px";
-
-      document.getElementById("moreTitle").style.visibility = "hidden";
-      document.getElementById("author").style.visibility = "hidden";
-      document.getElementById("bigPicture").style.visibility = "hidden";
-      document.getElementById("abstract").style.visibility = "hidden";
-      document.getElementById("link").style.visibility = "hidden";
-      document.getElementById("about").style.visibility = "visible";
-      document.getElementById("about").style.opacity = 1;
-      document.getElementById("exit").style.width = "0px";
-      document.getElementById('full_summary').style.width = '0px';
-      document.getElementById('full_summary').style.padding = '0px';
-
-
-      zoomLevel = map.getZoom();
-      if (zoomLevel <= 4) {
-        document.getElementById("sidebar").style.width = "240px";
-        document.getElementById("storyFeed").style.visibility = "visible";
-      }
-  }
+//  function exitPreviewPanel() {
+//      previewHoverable = 0;
+//      document.getElementById("full_summary").style.right = "0px";
+//
+//      document.getElementById("moreTitle").style.visibility = "hidden";
+//      document.getElementById("author").style.visibility = "hidden";
+//      document.getElementById("bigPicture").style.visibility = "hidden";
+//      document.getElementById("abstract").style.visibility = "hidden";
+//      document.getElementById("link").style.visibility = "hidden";
+//      document.getElementById("about").style.visibility = "visible";
+//      document.getElementById("about").style.opacity = 1;
+//      document.getElementById("exit").style.width = "0px";
+//      document.getElementById('full_summary').style.width = '0px';
+//      document.getElementById('full_summary').style.padding = '0px';
+//
+//
+//      zoomLevel = map.getZoom();
+//      if (zoomLevel <= 4) {
+//        document.getElementById("sidebar").style.width = "240px";
+//        document.getElementById("storyFeed").style.visibility = "visible";
+//      }
+//  }
 
   function initMap() {
 
@@ -238,10 +265,19 @@
     map.mapTypes.set('styled_map', styledMapType);
     map.setMapTypeId('styled_map');
 
+
+
+
+
     //map.data.addGeoJson(data);
     // Load GeoJSON.
-    map.data.loadGeoJson('http://nytimesglobalsnapshot.appspot.com/results.json');
-    //map.data.loadGeoJson('http://newsapptesting.appspot.com/results.json');
+    //map.data.loadGeoJson('http://nytimesglobalsnapshot.appspot.com/results.json');
+    map.data.loadGeoJson('http://newsapptesting.appspot.com/results.json');
+    setTimeout(function() {
+        categorizeData();
+    }, 1000);
+
+
 
     map.data.setStyle(function(feature) {
       var color = '#ce2727';
@@ -252,6 +288,7 @@
         icon: getCircle(4, color)
       };
     });
+
 
     function getCircle(magnitude, color) {
       return {
@@ -285,6 +322,43 @@
           map.setZoom(5);
         }
     }
+
+
+    // Iterate through data points, attach IDs and create modals for each one. (eventually set custom style to data points and add other classes for filterability)
+    function categorizeData() {
+
+        console.log("Inside categorizeData!");
+
+        // LOOP THROUGH FEATURES, CALL FUNCTION TO ADD MODAL, SET AN ID
+        map.data.forEach(function(feature) {
+            console.log("Inside forEach!");
+
+            var id = feature.getProperty('letter');
+
+            var cleanedId = id.replace(/\W/g,'_');
+            console.log("cleanedID: " + cleanedId);
+
+            feature.setProperty('Id', cleanedId);
+            console.log(feature.getProperty('Id'));
+
+
+            //var section = "SECTION";
+            //alert(feature.get('letter'));
+            //console.log('>> ', feature.get('letter'), 'properties are: ');
+            //feature.forEachProperty(function(value,property) {
+            //    console.log(property,':',value);
+            //});
+
+            // ADD MODAL
+        });
+
+        //var someStoryMaybe = getFeatureById(cleanedId);
+        //console.log(someStoryMaybe);
+    }
+
+
+
+
 
     google.maps.event.addListener(map, 'zoom_changed', function() {
       zoomLevel = map.getZoom();
@@ -387,7 +461,8 @@
     }, false);
 
 
-    function showTheStory(event) {
+
+    function showTheStory(title, url, image, authorTime, abstract, coordinates, latitude, longitude) {
       document.getElementById("moreTitle").style.visibility = "visible";
       document.getElementById("author").style.visibility = "visible";
       document.getElementById("bigPicture").style.visibility = "visible";
@@ -402,15 +477,10 @@
       document.getElementById("full_summary").style.padding = "20px";
 
       document.getElementById("content_container").style.display = "hidden";
-      selectedNow = event.feature.getProperty('url');
 
-      coordinates = event.feature.getProperty('coordinates');
-      console.log(coordinates);
-      var latitude = event.latLng.lat();
-      var longitude = event.latLng.lng() + 5;
       clickroute(latitude,longitude);
 
-      event.feature.setProperty('isSelected', true);
+
 
       document.getElementById("storyFeed").style.opacity = 0;
       //document.getElementById("storyFeed").style.visibility = "hidden";
@@ -449,17 +519,17 @@
         }, 1000);
 
 
-      console.log(event.feature.getProperty('letter'));
+      //console.log(event.feature.getProperty('letter'));
 
-      document.getElementById('moreTitle').textContent = event.feature.getProperty('letter');
-      abstract.textContent = event.feature.getProperty('abstract');
+      document.getElementById('moreTitle').textContent = title;
+      abstract.textContent = abstract;
 
       document.getElementById('link').textContent = "read more"
-      document.getElementById('link').href = event.feature.getProperty('url');
+      document.getElementById('link').href = url;
       document.getElementById('link').target = "_blank";
 
-      if (event.feature.getProperty('image') != "") {
-        document.getElementById('picture').src = event.feature.getProperty('image');
+      if (image != "") {
+        document.getElementById('picture').src = image;
       } else {
         document.getElementById('picture').src = "https://ubeam.com/wp-content/uploads/2015/12/new_york_times_logo_01.jpg";
       }
@@ -468,19 +538,42 @@
 
       //var authorTime = document.createElement("p");
       //authorTime.setAttribute("id", "author");
-      document.getElementById('author').textContent = event.feature.getProperty('authorTime');
+      document.getElementById('author').textContent = authorTime;
 
       previewHoverable = 1;
 
-      var storyId = event.feature.getProperty('url');
+      var storyId = url;
       document.getElementById(storyId).style.color = "lightgray";
     }
 
-    //When user clicks a point on the map, display preview panel, zoom in, and set center to coordinates of story
+
+
+    //When user clicks a point on the map, display preview panel using showStory(), zoom in, and set center to coordinates of story
     map.data.addListener('click', function(event) {
-      showTheStory(event);
+
+      // Get necessary info about story from event click
+      var title = event.feature.getProperty('letter');
+      var url = event.feature.getProperty('url');
+      var image = event.feature.getProperty('image');
+      var authorTime = event.feature.getProperty('authorTime');
+
+      var abstract = event.feature.getProperty('abstract');
+      console.log("abstract: " + abstract);
+
+      var latitude = event.latLng.lat();
+
+
+      var longitude = event.latLng.lng();
+
+      selectedNow = url
+      event.feature.setProperty('isSelected', true);
+
+      // SHOW STORY - GET MODAL WITH CORRESPONDING ID/CLASS
+      //showTheStory(title, url, image, authorTime, abstract, latitude, longitude);
 
     });
+
+
 
 
     // When the user hovers, tempt them to click by outlining the letters.

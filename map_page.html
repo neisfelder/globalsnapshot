@@ -33,7 +33,7 @@
 
 
 
-    <img id="forFb" src="https://static1.squarespace.com/static/5717e7c922482e47d3e1dc52/t/58598836e4fcb58d0e348e0f/1482262582989/mapapp3.jpg" />
+    <!--<img id="forFb" src="https://static1.squarespace.com/static/5717e7c922482e47d3e1dc52/t/58598836e4fcb58d0e348e0f/1482262582989/mapapp3.jpg" />-->
     <div id="map" onmousemove="showCoords(event)"></div>
     <!--<btn type="button" class="btn btn-info linkBtn fixedTopLeft">About</btn>-->
     <a class="btn btn-primary fixed fixedTopRight" id="about" href="/about" role="button">About</a>
@@ -44,12 +44,12 @@
     </div>
     <div id="sidebar" class="box_shadow">
       <div id="logo"><img src="assets/newLogo.png" alt="new York Times Global Snapshot" /></div>
-      <h1>Top Stories</h1>
+      <h1><a class="sidebarToggle" href="">Top Stories</a><a  class="sidebarToggle" href="">Sections</a></h1>
       <div id="storyFeed">
         {% for title in storyList %}
           <div class="sidebarLinks">
             <div class="storyTitle" id="{{title[1]}}" onclick="goToCoords({{title[3]}},{{title[2]}},{{title[1]}});">
-              <p>{{title[0]}}</p>
+              <p><strong>{{title[4]}} </strong>{{title[0]}}</p>
             </div>
           </div>
         {% endfor %}
@@ -67,12 +67,16 @@
     </div>
     <div id="exit"><img src="assets/arrowright.svg" alt=">"></div>
     <!--<div id="worldViewButton"><p>World View</p></div>-->
+
+
     <button type="button" class="btn btn-primary btn-lg fixed fixedTopLeft" id="worldViewButton">World View</button>
 
     <div class="fixed fixedBottomRight box_shadow" id="zoomUIBox">
       <img id="zoomInBtn" src="assets/zoomIn.png" alt="Zoom In" />
       <img id="zoomOutBtn" src="assets/zoomOut.png" alt="Zoom Out" />
     </div>
+
+    <div id="complete_summaries"></div>
 
 
     <!--<div id="loading"></div>

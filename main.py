@@ -26,6 +26,9 @@ import urllib2
 import json
 import webbrowser
 
+import datetime
+now = datetime.datetime.now()
+
 from google.appengine.api import memcache
 
 
@@ -142,14 +145,16 @@ def coordExample(stories):
                 coords = coordData["results"][0]["geometry"]["location"]
                 story["coordinates"] = coords
 
+
                 withGeoTag.append(story)
+
     return withGeoTag
 
 
 def overallInfo():
     
     ##code for locating cache and checking if it has expired
-    data = []
+    #data = []
     storyCache = memcache.get("story_cache")
     
     #check if key="storyCache" is in cache
@@ -161,6 +166,28 @@ def overallInfo():
         memcache.add(key="story_cache", value=data, time=3600)
 
     return data
+
+def getRecency(story):
+
+    # Get time story was released
+    storyTime = story["created_date"].split("-")
+
+    # CHECK HOW OLD STORY IS BY GETTING CURRENT DAY
+    todayDay = now.day
+    storyDay = storyTime[2][:2]
+    daysOld = int(todayDay) - int(storyDay)
+    if daysOld == 0:
+        daysOldString = "TODAY"
+    elif daysOld == 1:
+        daysOldString = "YESTERDAY"
+    elif daysOld > 1:
+        daysOldString = "%s DAYS AGO" % (str(daysOld))
+
+    #daysOld = "Days Old"
+    #story["daysold"] = daysOld
+
+    return daysOldString
+
 
 def getComments(articleUrl):
     baseurl = "http://api.nytimes.com/svc/community/v3/user-content/url.json?"
@@ -196,9 +223,11 @@ class MainHandler(webapp2.RequestHandler):
 
         template_values["description"] = "NYTimes Story Feed"
 
-        storyList = overallInfo()[:6]
+        storyList = overallInfo()#[:6]
+
+
         
-        template_values["storyList"] = [[story["title"], story["url"], float(story["coordinates"]["lat"]), float(story["coordinates"]["lng"])] for story in storyList]
+        template_values["storyList"] = [[story["title"], story["url"], float(story["coordinates"]["lat"]), float(story["coordinates"]["lng"]), getRecency(story)] for story in storyList]
 
         template = JINJA_ENVIRONMENT.get_template('map_page.html')
         self.response.write(template.render(template_values))
@@ -238,9 +267,17 @@ class myJSONHandler(webapp2.RequestHandler):
                 shortLoc = loc
             storyDict["location"] = shortLoc
 
-            storyTime = storyWithCoords["created_date"].split("-")
-            storyTimeLast = "%s.%s.%s" % (storyTime[1],storyTime[2][:2],storyTime[0][2:])
-            storyDict["authorTime"] = "%s, %s" % (storyWithCoords["byline"], storyTimeLast)
+            daysold = getRecency(storyWithCoords)
+            storyDict["daysOld"] = daysold
+
+            #storyTime = storyWithCoords["created_date"].split("-")
+            #storyTimeLast = "%s.%s.%s" % (storyTime[1],storyTime[2][:2],storyTime[0][2:])
+
+
+            storyDict["authorTime"] = "%s, %s" % (storyWithCoords["byline"], daysold)
+
+
+
             #storyDict["comments"] = storyComments
             if storyWithCoords["multimedia"] != []:
                 thumbnail = storyWithCoords["multimedia"]
